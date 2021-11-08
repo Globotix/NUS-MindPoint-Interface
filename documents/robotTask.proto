@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+message RequestMessage{
+    repeated RobotTask robotTask = 1;
+}
+
+message TaskObj{
+    //    mq received one message:(may include task list:scheduled task,temaporary task):
+    //    Definition of type of task execution：task_dict['type']
+    //     Scheduled task：timing --- db scheduled loop task：timing_loop --- db
+    //     Temporary task(one time)：immediate_exec --- task_queue event trigger task：event_trigger --- db
+    RobotTask robotTask = 1;
+
+}
+
+message RobotTask {
+    //Suggest to use Equipment code +separator + unique ID + child sequence number
+    string uuid = 1;
+    TaskType type = 2;
+    TaskEnum exec_type = 3;
+    Source source = 4;
+    oneof command{
+        Action  action = 16;
+        Order   order = 17;
+    }
+    //command the reuqired command parameter, suggest to use json string, easy for extend
+    string args = 5;
+    //accompany with task list
+    repeated RobotTask mate_tasks = 6;// List  [id_1, id_2]
+
+    //Whether main task need to end after the accompany task ended.
+    bool wait_mate_finish = 7;
+    //ask task priority level
+    CommandLevel level = 8;
+    //Whether need to return after finished the task, default is not needed.
+    bool require_return = 9;
+    //Whether need to reset the task execution sequence, default is not needed.
+    bool immediate_response = 10;
+    //Queue up the task after been interruptted, put in the task queue
+    bool enable_recovery = 11;
+    int32 loop = 12;
+    string start_time = 13;
+    string end_time = 14;
+}
+
+enum TaskType {
+    ACTION = 0;
+    ORDER = 1;
+}
+
+enum TaskEnum {
+    timing = 0;
+    timing_loop = 1;
+    immediate_exec = 2;
+}
+
+enum Source {
+    SERVER = 0;
+    APP = 1;
+    UI = 2;
+    WEB = 3;
+}
+
+
+enum Action {
+    //Soft E stop
+    E_STOP = 0;
+    //Charging，not in use
+    CHARGE_ROBOT = 1;
+    //Single marker point movement
+    MOVE_SINGLE = 2;
+}
+
+enum Order {
+    // Cancel Task
+    CANCEL_TASK = 0;
+    // Update scheduled task, not in use
+    RESERVE_TASK = 1;
+    // Sodtware update, not in use
+    UPDATE_SOFTWARE = 2;
+    // update task execution status, no in use
+    RESERVE_TASK_RESULT = 3;
+    // New user registration, not in use
+    USER_REGISTRATION = 4;
+    // update user information, not in use
+    RESERVE_USER = 5;
+    // Realeas rain mode, not in use
+    RAIN_RESET = 6;
+    // PTZ camera control, not in use
+    CAMERA_CONTROLLER = 7;
+    //Add marker point
+    ADD_MARKER = 8;
+    //Delete marker point
+    DELETE_MARKER = 9;
+}
+
+enum CommandLevel {
+    //Normal task
+    NORMAL = 0;
+    //Interruptted task
+    INTERRUPTED = 1;
+    //Important task
+    IMPORTANT = 2;
+}
+
+message TaskResult {
+    //Send task execution status to cloud
+    string uuid = 1;
+    int32 status = 2;
+    string msg = 3;
+    int32 task_pos = 4;
+    string result = 5;
+    string type = 6;
+    string topic = 7;
+    string target_marker = 8;
+    string markers = 9;
+    string start_time = 10;
+    string end_time = 11;
+    string isAlarm = 12;
+    string remark = 13;
+}
+
