@@ -1,0 +1,91 @@
+"""
+Topics that the Digital Twin dashboard should publish to
+"""
+
+#Topic name: "mp/navigate"
+#Function: Start navigation to a marker point or cancel an existing navigation action
+
+{
+    "uuid": 'ROBOT01_UUID0001',
+    "action": "",               #either 'cancel_movement' or 'start_movement'
+    "target_marker": "",        #Only used if action == 'start_movement'
+    "cancel_uuid": ""          #Only used if action == 'cancel_movement'
+}
+
+#Example1: navigating to a marker point
+{
+   "uuid": 'ROBOT01_UUID0001',
+   "action": "start_movement",         
+   "target_marker": "pointA"     
+}
+
+#Example2: cancelling a navigation action
+{
+   "uuid": 'ROBOT01_UUID0002',
+   "action": "cancel_movement",         
+   "cancel_uuid": "ROBOT01_UUID0001"     
+}
+
+#Example JSON in string format (for mosquitto_pub)
+mosquitto_pub -h localhost -t "nus5gdt/robots/mindpointeye/navigate" -u guest -P guest -m "{\"uuid\":\"ROBOT01_UUID0001\", \"action\":\"start_movement\", \"target_marker\":\"pointA\" }"
+
+mosquitto_pub -h localhost -t "nus5gdt/robots/mindpointeye/navigate" -u guest -P guest -m "{\"uuid\":\"ROBOT01_UUID0001\", \"action\":\"cancel_movement\", \"cancel_uuid\":\"ROBOT01_UUID0001\" }"
+
+
+
+#Topic name: "mp/marker"
+#Function: Create or delete a marker point
+
+{
+    "uuid": 'ROBOT01_UUID0001',
+    "action": "",               #either 'create_marker' or 'delete_marker'
+    "marker_name": "",          #Marker name to create or delete
+    "pos_x": "",                #x position of marker relative to map frame
+    "pos_y": "",                #y position of marker relative to map frame
+    "pos_theta": "",            #orientation(or yaw) of marker position
+}
+
+#Example1: creating a marker point
+{
+   "uuid": 'ROBOT01_UUID0001',
+   "action": "create_marker",        
+   "marker_name": "pointA",         
+   "pos_x": "1.0",                
+   "pos_y": "1.5",                
+   "pos_theta": "0.2",            
+}
+
+#Example2: deleting a marker point
+{
+   "uuid": 'ROBOT01_UUID0001',
+   "action": "delete_marker",        
+   "marker_name": "pointA"          
+}
+
+#Example JSON in string format (for mosquitto_pub)
+mosquitto_pub -h localhost -t "nus5gdt/robots/mindpointeye/marker" -u guest -P guest -m "{\"uuid\":\"ROBOT01_UUID0001\", \"action\":\"create_marker\", \"marker_name\":\"pointA\", \"pos_x\":1.0, \"pos_y\": 2.0, \"pos_theta\": 3.0}"
+
+mosquitto_pub -h localhost -t "nus5gdt/robots/mindpointeye/marker" -u guest -P guest -m "{\"uuid\":\"ROBOT01_UUID0001\", \"action\":\"delete_marker\", \"marker_name\":\"pointA\" }"
+
+"""
+Topics that the Digital Twin dashboard should subscribe to
+"""
+
+#Topic name: "nus5gdt/robots/mindpointeye/robot_state"
+{
+    "error_message": "",
+    "status": "OK",
+    "time_stamp": int(time_stamp), # timestamp
+    "results": {
+        "move_target": "",          # name of target point in movement task
+        "move_status": "",          # Status of the executing movement task: idle, running, succeeded, failed, cancelled
+        "charge_state": "",         # charging status
+        "power_percent": 0.0,       # battery level in %
+        "current_pose": {
+            "x": 0.0,
+            "y": 0.0,
+            "theta": 0.0,
+        },
+        "error_code": 0             # error code in hexadecimal，representing by 8 digit in total, if not showing 0, stands for machine are in error.        
+    }
+}

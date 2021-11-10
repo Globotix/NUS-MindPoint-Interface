@@ -24,6 +24,8 @@ sudo apt-get install mosquitto-clients
 
 5. asyncio
 
+6. protobuf
+
 # Pre-requisite steps
 
 1. First enable MQTT support in RabbitMQ by enabling a MQTT adapter plugin (already installed with standard shipment of RabbitMQ)
@@ -63,31 +65,34 @@ mqtt.default_pass     = guest
 #every connection belongs to a virtual host. Some messaging protocols have the concept of vhosts, others don't. MQTT falls into the latter category. Therefore the MQTT plugin needs to provide a way to map connections to vhosts.
 mqtt.vhost            = /
 mqtt.exchange         = amq.topic
+
 # 24 hours by default
 mqtt.subscription_ttl = 86400000
 mqtt.prefetch         = 10
 
 ```
 
-# Quick Start
-1. First figure out how to use MQTT - Done
+5. Compile protobuf messages
+```
+protoc -I=$SRC_DIR --python_out=$DST_DIR $SRC_DIR/addressbook.proto
+```
 
-2. Next try to use MQTT plugin with RabbitMQ
-
-3. Figure out how to send protobuf over RabbitMQ
 
 # Broker Guide
 ## Mosquitto
 
 - Start and stop service
 ```
-sudo service  mosquitto stop
+sudo service mosquitto stop
 sudo service mosquitto start #see note later
 ```
 - The stop/start scripts start the mosquitto broker in the background and also use the default mosquitto.conf file in the /etc/mosquitto/ folder.
 
 - Test subscribe
-mosquitto_sub -v -h localhost -t \# -d
+mosquitto_sub -v -h localhost -t \# -u guest -P guest -d
+
+- Test Publish
+mosquitto_pub -h localhost -t mp/navigate -u guest -P guest -m {\"hey\":\"HO\"} 
 
 ## RabbitMQ 
 
@@ -96,25 +101,7 @@ mosquitto_sub -v -h localhost -t \# -d
 sudo rabbitmqctl list_queues
 ```
 
-- 
-
-# Open Issues
-
-1. What is "order"? As in "robot_task.order = 8" in "3.1 Create marker point at specific coordinates"
-
-2. Is theta in radians/degrees
-
-3.
-
-
-# Already implemented
-
-- NUS Digital Twin takes in MQTT
-- Max uses paho-mqtt to send MQTT message and Mosquitto as a broker service
 
 
 # References
 - rabbitmq.com/mqtt.html
-- https://blogs.sap.com/2016/02/21/uniting-amqp-and-mqtt-message-brokering-with-rabbitmq/
-- http://wiki.ros.org/mqtt_bridge
-- http://www.steves-internet-guide.com/install-mosquitto-linux/
