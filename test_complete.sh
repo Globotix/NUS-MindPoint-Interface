@@ -13,7 +13,8 @@ tmux split-window -v -t 0.3 $TMUX_PANE
 
 #Launch main node
 # tmux send-keys -t 0.0 "cd dist_nus && python3 main.pyc" C-m
-tmux send-keys -t 0.0 "cd dist_internal && python3 main.pyc" C-m
+# tmux send-keys -t 0.0 "cd dist_internal && python3 main.pyc" C-m
+tmux send-keys -t 0.0 "python3 main.py" C-m
 
 
 #MQTT TEST 1: MQTT Subscription to check robot status

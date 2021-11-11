@@ -1,25 +1,17 @@
-#!/usr/bin/env python3
-
-from mqtt_handler import *
-from amqp_handler import *
-
-import threading
-
-import sys, argparse, time
-
+import sys, argparse
 
 ##################################################
-#DEFAULT RABBITQ CONSTANTS
+#RABBITQ CONSTANTS
 ##################################################
 AIO_RABBITMQ_URL = str("amqp://guest:guest@localhost/")
-MQTT_RABBITMQ_URL = str("localhost")
+MQTT_RABBITMQ_URL = "localhost"
 TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
 STATUS_TOPIC = str("STATUS_TOPIC")
 
 ##################################################
-#DEFAULT MQTT CONSTANTS
+#MQTT CONSTANTS
 ##################################################
-MQTT_BROKER_ADDRESS = str("0.0.0.0") 
+MQTT_BROKER_ADDRESS = "0.0.0.0" 
 MQTT_BROKER_PORT = 1883
 # MQTT_BROKER_ADDRESS = "52.77.234.153"
 # MQTT_BROKER_PORT = 30006
@@ -30,29 +22,25 @@ MQTT_NAVIGATION_TOPIC = "nus5gdt/robots/mindpointeye/navigate"
 MQTT_MARKER_TOPIC = "nus5gdt/robots/mindpointeye/marker"
 MQTT_ROBOT_STATE_TOPIC = "nus5gdt/robots/mindpointeye/robot_state"
 
-mqtt_handler = MQTTHandler()
-amqp_handler = AMQPHandler()
+
 
 #MQTT address and port
-mqtt_broker_address = MQTT_BROKER_ADDRESS
-mqtt_broker_port = MQTT_BROKER_PORT
-
+mqtt_broker_address = None
+mqtt_broker_port = None
 #username and password
-mqtt_user = MQTT_USER
-mqtt_password = MQTT_PASSWORD
-
+mqtt_user = None
+mqtt_password = None
 #RabbitMQ topics
-task_publisher_topic = TASK_PUBLISHER_TOPIC
-status_topic = STATUS_TOPIC
-
+task_publisher_topic =  None
+status_topic = None
 #Digital Twin topics
-mqtt_navigation_topic = MQTT_NAVIGATION_TOPIC
-mqtt_marker_topic = MQTT_MARKER_TOPIC
-mqtt_robot_state_topic = MQTT_ROBOT_STATE_TOPIC
-
+mqtt_navigation_topic = None
+mqtt_marker_topic = None
+mqtt_robot_state_topic = None
 #RabbitMQ address
-aio_rabbitmq_url = AIO_RABBITMQ_URL
-mqtt_rabbitmq_url = MQTT_RABBITMQ_URL
+aio_rabbitmq_url = None
+mqtt_rabbitmq_url = None
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -77,9 +65,29 @@ def parse_arguments():
     #RabbitMQ address
     parser.add_argument("--aio_rabbitmq_url", help="Async RabbitMQ Address ", type=str)
     parser.add_argument("--mqtt_rabbitmq_url", help="Sync RabbitMQ Address", type=str)
-
     
     args = parser.parse_args()
+
+    #MQTT address and port
+    mqtt_broker_address = MQTT_BROKER_ADDRESS
+    mqtt_broker_port = MQTT_BROKER_PORT
+
+    #username and password
+    mqtt_user = MQTT_USER
+    mqtt_password = MQTT_PASSWORD
+
+    #RabbitMQ topics
+    task_publisher_topic = TASK_PUBLISHER_TOPIC
+    status_topic = STATUS_TOPIC
+
+    #Digital Twin topics
+    mqtt_navigation_topic = MQTT_NAVIGATION_TOPIC
+    mqtt_marker_topic = MQTT_MARKER_TOPIC
+    mqtt_robot_state_topic = MQTT_ROBOT_STATE_TOPIC
+
+    #RabbitMQ address
+    aio_rabbitmq_url = AIO_RABBITMQ_URL
+    mqtt_rabbitmq_url = MQTT_RABBITMQ_URL
 
 
     #MQTT address and port
@@ -90,7 +98,7 @@ def parse_arguments():
 
     #username and password
     if args.mqtt_user:
-        mqtt_user =args.mqtt_user
+        mqtt_user = args.mqtt_user
     if args.mqtt_password:
         mqtt_password = args.mqtt_password
 
@@ -115,75 +123,6 @@ def parse_arguments():
         mqtt_rabbitmq_url = args.mqtt_rabbitmq_url
 
 
-class MQTTThread(threading.Thread):
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-    def run(self):
-        print("start_mqtt: Started MQTT Thread")
 
-        mqtt_handler.initAMQPParams(task_publisher_topic, status_topic)
-        mqtt_handler.initMQTTParams(mqtt_navigation_topic, mqtt_marker_topic, mqtt_robot_state_topic)
-
-        mqtt_handler.initMQTTConnection(mqtt_broker_address, mqtt_broker_port, mqtt_user=mqtt_user, mqtt_password=mqtt_password)
-        mqtt_handler.initAMQPConnection(mqtt_rabbitmq_url)
-        mqtt_handler.startLoop()
-
-class AMQPThread(threading.Thread):
-    def __init__(self, threadID, name):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-    def run(self):
-        print("start_amqp: Started AMQP Thread")
-
-        #There is no event loop is this is run outside the main thread,
-        #so we need to catch the exception and create our own event loop
-        try: 
-            loop = asyncio.get_event_loop()
-        except RuntimeError as ex:
-            print(ex)
-            print("creating a new event loop")
-            loop = asyncio.new_event_loop()
-
-
-        amqp_handler.initParams(aio_rabbitmq_url, 
-                                task_publisher_topic, 
-                                status_topic)
-
-        try: 
-            loop.create_task(amqp_handler.initConnection(loop))
-
-            loop.create_task(amqp_handler.subscribeQueue(status_topic, act_on_msg=mqtt_handler.pubRobotState))
-
-            loop.run_forever()
-        finally:
-            print("Event Loop closing")
-            loop.close()
-
-
-def main():
-    thread1 = MQTTThread(1, "mqtt_thread")
-    thread2 = AMQPThread(2, "amqp_thread")
-
-    thread1.start()
-    thread2.start()
-
-    thread1.join()
-    thread2.join()
-
-if __name__ == '__main__':
-    try:
-        parse_arguments()
-        main()
-
-        print("Main(): all threads ended")
-    except KeyboardInterrupt: 
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
-
-
+if __name__ == "__main__":
+    parse_arguments()

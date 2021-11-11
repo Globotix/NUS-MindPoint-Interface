@@ -8,33 +8,23 @@ from google.protobuf.json_format import MessageToJson, MessageToDict
 import robotTask_pb2
 
 
-##################################################
-#RABBITQ CONSTANTS
-##################################################
-RABBITMQ_URL = str("amqp://guest:guest@localhost/")
-# RABBITMQ_URL = str
-TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
-STATUS_TOPIC = str("STATUS_TOPIC")
-
-##################################################
-#MQTT CONSTANTS
-##################################################
-# BROKER_ADDRESS = "0.0.0.0" 
-# BROKER_PORT = 1883
-BROKER_ADDRESS = "52.77.234.153"
-BROKER_PORT = "30006"
-# MQTT_USER = "guest"
-# MQTT_PASSWORD = "guest"
-#Subscribed topics
-NAVIGATION_TOPIC = "nus5gdt/robots/mindpointeye/navigate"
-MARKER_TOPIC = "nus5gdt/robots/mindpointeye/marker"
-ROBOT_STATE_TOPIC = "nus5gdt/robots/mindpointeye/robot_state"
-
 class MQTTHandler():
-    def __init__(self, broker_address, broker_port, mqtt_user="", mqtt_password=""):
+    def __init__(self):
         self.client = mqtt.Client("mqtt_test") #create new instance
+    
+    def initAMQPParams(self, task_publisher_topic, status_topic):
+        self.task_publisher_topic = task_publisher_topic
+        self.status_topic = status_topic
 
+    def initMQTTParams(self, navigation_topic, marker_topic, robot_state_topic):
+        self.navigation_topic = navigation_topic
+        self.marker_topic = marker_topic
+        self.robot_state_topic = robot_state_topic
+        
+
+    def initMQTTConnection(self, broker_address, broker_port, mqtt_user="", mqtt_password=""):
         #Set username and password if the user and password fields are not empty
+        #IMPORTANT THIS MUST BE SET BEFORE client.connect
         if (mqtt_user != "" and mqtt_password != ""):
             self.client.username_pw_set(mqtt_user, mqtt_password)
 
@@ -50,7 +40,7 @@ class MQTTHandler():
         self.client.on_message = self.on_message
 
         #Subscribe to navigation topic and marker topic
-        self.client.subscribe([(NAVIGATION_TOPIC, 0), (MARKER_TOPIC, 0)])
+        self.client.subscribe([(self.navigation_topic, 0), (self.marker_topic, 0)])
 
         #Test publishing
         # self.test_pub_mqtt()
@@ -89,11 +79,11 @@ class MQTTHandler():
     def on_message(self, client, userdata, msg):
         # print("received msg on topic("+msg.topic+") with msg: "+msg.payload)
 
-        if (msg.topic == NAVIGATION_TOPIC):
+        if (msg.topic == self.navigation_topic):
             #Convert to protobuf message and send to RabbitMQ
             self.pubNavigate(msg.payload)
 
-        elif (msg.topic == MARKER_TOPIC):
+        elif (msg.topic == self.marker_topic):
             #Convert to protobuf message and send to RabbitMQ
             self.pubMarker(msg.payload)
 
@@ -137,7 +127,7 @@ class MQTTHandler():
         #Creates a queue, makes sure that it exists
         self.channel.queue_declare(queue=topic)
 
-        self.channel.basic_publish(exchange='', routing_key=TASK_PUBLISHER_TOPIC, body=msg_json)
+        self.channel.basic_publish(exchange='', routing_key=self.task_publisher_topic, body=msg_json)
         print(" [x] Sent msg: ", msg_json)
 
 
@@ -197,7 +187,7 @@ class MQTTHandler():
         msg_json = json.dumps(msg_dict)
 
         #2. Publish robot state as json msg via MQTT
-        self.pubMQTT(msg_json, ROBOT_STATE_TOPIC)
+        self.pubMQTT(msg_json, self.robot_state_topic)
 
     """
     Publish to Mindpoint
@@ -230,7 +220,7 @@ class MQTTHandler():
         msg_json = MessageToJson(msg_protobuf)
 
         #4. Send JSON message over rabbitmq
-        self.pubRabbitMQ(msg_json, TASK_PUBLISHER_TOPIC)
+        self.pubRabbitMQ(msg_json, self.task_publisher_topic)
 
 
     #Process json msg in protobuf and send to rabbitMQ
@@ -262,7 +252,7 @@ class MQTTHandler():
         msg_json = MessageToJson(msg_protobuf)
 
         #4. Send protobuf message over rabbitmq
-        self.pubRabbitMQ(msg_json, TASK_PUBLISHER_TOPIC)
+        self.pubRabbitMQ(msg_json, self.task_publisher_topic)
 
     """
     Test methods

@@ -6,22 +6,16 @@ import json
 #Import protobuf messages
 import robotTask_pb2
 
-##################################################
-#RABBITQ CONSTANTS
-##################################################
-RABBITMQ_URL = str("amqp://guest:guest@localhost/")
-TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
-STATUS_TOPIC = str("STATUS_TOPIC")
-
 class AMQPHandler():
-    def __init__(self, url, task_publisher_topic, status_topic, subscribe_frequency = 0.1):
+    def __init__(self):
+        self.connection = None
+    
+    def initParams(self, url, task_publisher_topic, status_topic, subscribe_frequency = 0.1):
         self.url = url
         self.queue_name1 = task_publisher_topic
         self.queue_name2 = status_topic
 
         self.subscribe_frequency = subscribe_frequency
-
-        self.connection = None
 
     async def initConnection(self, loop):
         print("AMQPConsumer: Init connection")
@@ -56,20 +50,6 @@ class AMQPHandler():
             routing_key=self.queue_name1
         )
         await self.connection.close()
-
-    # async def publishAMQPMsg(self, msg):
-    #     await self.exchange.publish(
-    #         aio_pika.Message(
-    #             bytes('Hello', 'utf-8'),
-    #             content_type='text/plain',
-    #             headers={'foo': 'bar'}
-    #         ),
-    #         self.queue_name1
-    #     )
-
-    # async def publishMQTTMsg(self, msg):
-    #     print("AMQPHandler: publishMQTTMsg")
-    #     self.mqtt_handler.publishMsg(msg)
 
     async def subscribeQueue(self, routing_key_sub, process_msg_sub = None, act_on_msg = None):
         """
