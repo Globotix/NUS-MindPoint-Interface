@@ -26,6 +26,9 @@ pip install asyncio
 
 # protobuf
 pip install protobuf
+
+#Install python installer to package python programs as standalone executables
+pip install pyinstaller
 ```
 
 # Quick Start
@@ -35,6 +38,10 @@ pip install protobuf
 protoc -I=$SRC_DIR --python_out=$DST_DIR $SRC_DIR/addressbook.proto
 ```
 
+2. Compile python executable for distribution
+```
+pyinstaller --onefile main.py
+```
 
 # Broker Guide
 ## Mosquitto
