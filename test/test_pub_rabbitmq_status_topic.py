@@ -1,6 +1,6 @@
 
 """
-Test publishing to STATUS_TOPIC 
+Test RabbitMQ publishing to STATUS_TOPIC 
 """
 
 #!/usr/bin/env python
@@ -9,9 +9,10 @@ import time
 
 import json
 
+PUBLISH_FREQUENCY = 2
+
 TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
 STATUS_TOPIC = str("STATUS_TOPIC")
-
 
 def test_fake_status_msg():
     """
@@ -77,10 +78,14 @@ class AMQPPublisher():
         while True:
             json_msg = test_fake_status_msg()
             self.channel.basic_publish(exchange='', routing_key=STATUS_TOPIC, body=test_fake_status_msg())
-            print(" [x] Sent msg: ", json_msg)
-            time.sleep(1)
+            print("RabbitMQ: Sent Status msg on " + STATUS_TOPIC,)
+            time.sleep(PUBLISH_FREQUENCY)
 
 def main():
+    print("--------------------------")
+    print("Started RabbitMQ Publisher for STATUS_TOPIC")
+    print("--------------------------")
+
     amqp_publisher = AMQPPublisher('localhost')
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 """
-Test subscribing to TASK_PUBLISHER_TOPIC 
+Test RabbitMQ subscribing to TASK_PUBLISHER_TOPIC 
 """
 
 #!/usr/bin/env python
@@ -28,8 +28,8 @@ class AMQPConsumer():
     def callback(ch, method, properties, body, msg):
         body_dict = json.loads(msg)
 
-        print(body_dict)
-        # print(" [x] Received %r" % body)
+        print("AMQPConsumer received: ")
+        print( body_dict)
 
 
 def main():

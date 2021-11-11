@@ -42,8 +42,8 @@ class MQTTHandler():
 
         #Register callbacks
         self.client.on_connect = self.on_connect
-        self.client.on_log = self.on_log
-        self.client.on_publish = self.on_publish
+        # self.client.on_log = self.on_log
+        # self.client.on_publish = self.on_publish
         self.client.on_disconnnect = self.on_disconnect
 
         self.client.on_message = self.on_message
@@ -93,7 +93,6 @@ class MQTTHandler():
             self.pubNavigate(msg.payload)
 
         elif (msg.topic == MARKER_TOPIC):
-            print("received msg on topic", msg.topic)
             #Convert to protobuf message and send to RabbitMQ
             self.pubMarker(msg.payload)
 
