@@ -15,17 +15,17 @@ STATUS_TOPIC = str("STATUS_TOPIC")
 ##################################################
 #MQTT CONSTANTS
 ##################################################
-BROKER_ADDRESS = "0.0.0.0" 
-BROKER_PORT = 1883
-# BROKER_ADDRESS = "52.77.234.153"
-# BROKER_PORT = "30006"
+# BROKER_ADDRESS = "0.0.0.0" 
+# BROKER_PORT = 1883
+BROKER_ADDRESS = "52.77.234.153"
+BROKER_PORT = 30006
 MQTT_USER = "guest"
 MQTT_PASSWORD = "guest"
 
 MQTT_RABBITMQ_URL = "localhost"
 #Subscribed topics
 
-mqtt_handler = MQTTHandler(BROKER_ADDRESS, BROKER_PORT, MQTT_USER, MQTT_PASSWORD)
+mqtt_handler = MQTTHandler(BROKER_ADDRESS, BROKER_PORT, mqtt_user=MQTT_USER, mqtt_password=MQTT_PASSWORD)
 
 def start_mqtt():
     print("start_mqtt: Started MQTT Thread")

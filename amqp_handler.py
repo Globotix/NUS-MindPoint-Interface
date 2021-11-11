@@ -13,7 +13,6 @@ RABBITMQ_URL = str("amqp://guest:guest@localhost/")
 TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
 STATUS_TOPIC = str("STATUS_TOPIC")
 
-
 class AMQPHandler():
     def __init__(self, url, task_publisher_topic, status_topic, subscribe_frequency = 0.1):
         self.url = url
@@ -119,49 +118,3 @@ class AMQPHandler():
                     print(f"subscribeQueue: Exception while binding to queue: {err} ")
 
             await asyncio.sleep(self.subscribe_frequency)
-
-def main():
-
-    loop = asyncio.get_event_loop()
-
-    amqp_handler = AMQPHandler( RABBITMQ_URL, 
-                                TASK_PUBLISHER_TOPIC, 
-                                STATUS_TOPIC)
-
-    #signal handling with coroutines
-    async def ask_exit(signame, loop):
-        """
-        Loop should stop here after SIGINT/SIGTERM
-        """
-        print("got signal %s: exit" % signame)
-        await amqp_handler.closeConnection()
-        loop.stop()
-
-    #add signal handling for interrupt and termination
-    for signame in {'SIGINT', 'SIGTERM'}:
-        loop.add_signal_handler(
-            #getattr returns value of the named attribute of an object
-            getattr(signal, signame),
-            #create higher order function
-            lambda: asyncio.ensure_future(ask_exit(signame, loop))
-        )
-
-    try: 
-        loop.create_task(amqp_handler.initConnection(loop))
-
-        loop.run_forever()
-    finally:
-        print("Loop closing")
-        loop.close()
-
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt: 
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
-
-

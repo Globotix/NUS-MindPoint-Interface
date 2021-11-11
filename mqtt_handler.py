@@ -19,23 +19,24 @@ STATUS_TOPIC = str("STATUS_TOPIC")
 ##################################################
 #MQTT CONSTANTS
 ##################################################
-BROKER_ADDRESS = "0.0.0.0" 
-BROKER_PORT = 1883
-# BROKER_ADDRESS = "52.77.234.153"
-# BROKER_PORT = "30006"
-MQTT_USER = "guest"
-MQTT_PASSWORD = "guest"
+# BROKER_ADDRESS = "0.0.0.0" 
+# BROKER_PORT = 1883
+BROKER_ADDRESS = "52.77.234.153"
+BROKER_PORT = "30006"
+# MQTT_USER = "guest"
+# MQTT_PASSWORD = "guest"
 #Subscribed topics
 NAVIGATION_TOPIC = "nus5gdt/robots/mindpointeye/navigate"
 MARKER_TOPIC = "nus5gdt/robots/mindpointeye/marker"
 ROBOT_STATE_TOPIC = "nus5gdt/robots/mindpointeye/robot_state"
 
 class MQTTHandler():
-    def __init__(self, broker_address, broker_port, mqtt_user, mqtt_password):
+    def __init__(self, broker_address, broker_port, mqtt_user="", mqtt_password=""):
         self.client = mqtt.Client("mqtt_test") #create new instance
 
-        #Set username and password
-        self.client.username_pw_set(mqtt_user, mqtt_password)
+        #Set username and password if the user and password fields are not empty
+        if (mqtt_user != "" and mqtt_password != ""):
+            self.client.username_pw_set(mqtt_user, mqtt_password)
 
         #Connect to broker
         self.client.connect(broker_address, broker_port, 60) #connect to broker
@@ -323,18 +324,4 @@ class MQTTHandler():
     def test_pub_mqtt(self):
         self.pubRobotState(self.test_fake_status_msg())
 
-
-
-def main():
-    mqtt_handler = MQTTHandler(BROKER_ADDRESS, BROKER_PORT, MQTT_USER, MQTT_PASSWORD)
-
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt: 
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
 

@@ -38,9 +38,14 @@ pip install pyinstaller
 protoc -I=$SRC_DIR --python_out=$DST_DIR $SRC_DIR/addressbook.proto
 ```
 
-2. Compile python executable for distribution
+2. Compile python executable for distribution (Only on the same CPU architecture (ARM/ x86))
 ```
 pyinstaller --onefile main.py
+```
+
+3. Compile Python bytecode .pyc
+```
+python3 -m compileall -b .
 ```
 
 # Broker Guide
@@ -71,3 +76,25 @@ mosquitto_pub -h localhost -t mp/navigate -u guest -P guest -m {\"hey\":\"HO\"}
 sudo rabbitmqctl list_queues
 ```
 
+
+- If need be, Modify rabbimq config file ("/etc/rabbitmq/rabbitmq.conf")
+```
+mqtt.listeners.tcp.default = 1883
+## Default MQTT with TLS port is 8883
+# mqtt.listeners.ssl.default = 8883
+
+# anonymous connections, if allowed, will use the default
+# credentials specified here
+mqtt.allow_anonymous  = true
+mqtt.default_user     = guest
+mqtt.default_pass     = guest
+
+#every connection belongs to a virtual host. Some messaging protocols have the concept of vhosts, others don't. MQTT falls into the latter category. Therefore the MQTT plugin needs to provide a way to map connections to vhosts.
+mqtt.vhost            = /
+mqtt.exchange         = amq.topic
+
+# 24 hours by default
+mqtt.subscription_ttl = 86400000
+mqtt.prefetch         = 10
+
+```
