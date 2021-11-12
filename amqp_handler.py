@@ -78,7 +78,7 @@ class AMQPHandler():
         while True:
             try:
                 #PLEASE DO NOT MAKE THE QUEUE DURABLE
-                queue = await self.channel.declare_queue(routing_key_sub, durable=True)
+                queue = await self.channel.declare_queue(routing_key_sub, durable=False)
                 # await queue.bind(self.exchange, routing_key_sub)
                 try: 
                     async with queue.iterator() as queue_iter:
