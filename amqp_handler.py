@@ -28,7 +28,7 @@ class AMQPHandler():
         # Creating channel from connection
         self.channel = await self.connection.channel()
         # Declaring exchange from channel
-        self.exchange = await self.channel.declare_exchange(self.exchange_name, exchange_type='topic',durable=True, auto_delete=False)
+        self.exchange = await self.channel.declare_exchange(self.exchange_name, type='topic',durable=True, auto_delete=False)
         
         # Declaring queue from channel
         self.queue1 = await self.channel.declare_queue(self.queue_name1, auto_delete=False) # type: aio_pika.Queue
