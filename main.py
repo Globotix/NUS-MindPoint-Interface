@@ -13,9 +13,12 @@ import sys, argparse, time
 ##################################################
 AIO_RABBITMQ_URL = str("amqp://guest:guest@localhost/")
 MQTT_RABBITMQ_URL = str("localhost")
+
+RABBITMQ_EXCHANGE = str("default-topic-exchange")
+
 TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
 STATUS_TOPIC = str("STATUS_TOPIC")
-RABBITMQ_EXCHANGE = str("default-topic-exchange")
+TASK_STATUS_TOPIC = str("TASK_STATUS_TOPIC")
 
 ##################################################
 #DEFAULT MQTT CONSTANTS
@@ -50,6 +53,7 @@ mqtt_password = MQTT_PASSWORD
 rabbitmq_exchange = RABBITMQ_EXCHANGE
 task_publisher_topic = TASK_PUBLISHER_TOPIC
 status_topic = STATUS_TOPIC
+task_status_topic = TASK_STATUS_TOPIC
 
 #Digital Twin topics
 mqtt_navigation_topic = MQTT_NAVIGATION_TOPIC
@@ -157,6 +161,7 @@ class AMQPThread(threading.Thread):
         amqp_handler.initParams(aio_rabbitmq_url, 
                                 task_publisher_topic, 
                                 status_topic,
+                                task_status_topic,
                                 rabbitmq_exchange)
 
         try: 
@@ -168,7 +173,6 @@ class AMQPThread(threading.Thread):
         finally:
             print("Event Loop closing")
             loop.close()
-
 
 def main():
     thread1 = MQTTThread(1, "mqtt_thread")

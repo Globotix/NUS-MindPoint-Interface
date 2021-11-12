@@ -10,12 +10,13 @@ class AMQPHandler():
     def __init__(self):
         self.connection = None
     
-    def initParams(self, url, task_publisher_topic, status_topic, exchange, subscribe_frequency = 0.1):
+    def initParams(self, url, task_publisher_topic, status_topic, task_status_topic, exchange, subscribe_frequency = 0.1):
         self.url = url
         self.queue_name1 = task_publisher_topic
         self.queue_name2 = status_topic
+        self.queue_name3 = task_status_topic
         
-        self.exchange = exchange
+        self.exchange_name = exchange
 
         self.subscribe_frequency = subscribe_frequency
 
@@ -27,12 +28,17 @@ class AMQPHandler():
         # Creating channel from connection
         self.channel = await self.connection.channel()
         # Declaring exchange from channel
-        self.exchange = await self.channel.declare_exchange(self.exchange, exchange_type='topic',durable=True, auto_delete=False)
+        self.exchange = await self.channel.declare_exchange(self.exchange_name, exchange_type='topic',durable=True, auto_delete=False)
+        
         # Declaring queue from channel
-        self.queue = await self.channel.declare_queue(self.queue_name1, auto_delete=False) # type: aio_pika.Queue
+        self.queue1 = await self.channel.declare_queue(self.queue_name1, auto_delete=False) # type: aio_pika.Queue
+        self.queue2 = await self.channel.declare_queue(self.queue_name2, auto_delete=False) # type: aio_pika.Queue
+        self.queue3 = await self.channel.declare_queue(self.queue_name3, auto_delete=False) # type: aio_pika.Queue
 
-        # Binding queue to exchange for queue_name1
-        await self.queue.bind(self.exchange, self.queue_name1)
+        # Binding queue to exchange for queues
+        await self.queue1.bind(self.exchange, self.queue_name1)
+        await self.queue2.bind(self.exchange, self.queue_name2)
+        await self.queue3.bind(self.exchange, self.queue_name3)
 
     async def closeConnection(self):
         print("AMQP Connection closing")
