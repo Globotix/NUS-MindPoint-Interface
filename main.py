@@ -15,16 +15,21 @@ AIO_RABBITMQ_URL = str("amqp://guest:guest@localhost/")
 MQTT_RABBITMQ_URL = str("localhost")
 TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
 STATUS_TOPIC = str("STATUS_TOPIC")
+RABBITMQ_EXCHANGE = str("default-topic-exchange")
 
 ##################################################
 #DEFAULT MQTT CONSTANTS
 ##################################################
-MQTT_BROKER_ADDRESS = str("0.0.0.0") 
-MQTT_BROKER_PORT = 1883
-# MQTT_BROKER_ADDRESS = "52.77.234.153"
-# MQTT_BROKER_PORT = 30006
-MQTT_USER = "guest"
-MQTT_PASSWORD = "guest"
+
+# MQTT_BROKER_ADDRESS = str("0.0.0.0") 
+# MQTT_BROKER_PORT = 1883
+# MQTT_USER = "guest"
+# MQTT_PASSWORD = "guest"
+
+MQTT_BROKER_ADDRESS = "52.77.234.153"
+MQTT_BROKER_PORT = 30006
+MQTT_USER = ""
+MQTT_PASSWORD = ""
 
 MQTT_NAVIGATION_TOPIC = "nus5gdt/robots/mindpointeye/navigate"
 MQTT_MARKER_TOPIC = "nus5gdt/robots/mindpointeye/marker"
@@ -42,6 +47,7 @@ mqtt_user = MQTT_USER
 mqtt_password = MQTT_PASSWORD
 
 #RabbitMQ topics
+rabbitmq_exchange = RABBITMQ_EXCHANGE
 task_publisher_topic = TASK_PUBLISHER_TOPIC
 status_topic = STATUS_TOPIC
 
@@ -150,7 +156,8 @@ class AMQPThread(threading.Thread):
 
         amqp_handler.initParams(aio_rabbitmq_url, 
                                 task_publisher_topic, 
-                                status_topic)
+                                status_topic,
+                                rabbitmq_exchange)
 
         try: 
             loop.create_task(amqp_handler.initConnection(loop))

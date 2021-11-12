@@ -10,10 +10,12 @@ class AMQPHandler():
     def __init__(self):
         self.connection = None
     
-    def initParams(self, url, task_publisher_topic, status_topic, subscribe_frequency = 0.1):
+    def initParams(self, url, task_publisher_topic, status_topic, exchange, subscribe_frequency = 0.1):
         self.url = url
         self.queue_name1 = task_publisher_topic
         self.queue_name2 = status_topic
+        
+        self.exchange = exchange
 
         self.subscribe_frequency = subscribe_frequency
 
@@ -25,7 +27,7 @@ class AMQPHandler():
         # Creating channel from connection
         self.channel = await self.connection.channel()
         # Declaring exchange from channel
-        self.exchange = await self.channel.declare_exchange('direct', auto_delete=False)
+        self.exchange = await self.channel.declare_exchange(self.exchange, exchange_type='topic',durable=True, auto_delete=False)
         # Declaring queue from channel
         self.queue = await self.channel.declare_queue(self.queue_name1, auto_delete=False) # type: aio_pika.Queue
 
@@ -70,7 +72,7 @@ class AMQPHandler():
         while True:
             try:
                 #PLEASE DO NOT MAKE THE QUEUE DURABLE
-                queue = await self.channel.declare_queue(routing_key_sub, durable=False)
+                queue = await self.channel.declare_queue(routing_key_sub, durable=True)
                 # await queue.bind(self.exchange, routing_key_sub)
                 try: 
                     async with queue.iterator() as queue_iter:
