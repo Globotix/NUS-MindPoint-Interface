@@ -73,7 +73,7 @@ class AMQPPublisher():
         self.channel = self.connection.channel()
         
         #Creates a queue, makes sure that it exists
-        self.channel.queue_declare(queue=STATUS_TOPIC)
+        self.channel.queue_declare(queue=STATUS_TOPIC, durable= True)
 
         while True:
             json_msg = test_fake_status_msg()

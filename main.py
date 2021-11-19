@@ -24,15 +24,15 @@ TASK_STATUS_TOPIC = str("TASK_STATUS_TOPIC")
 #DEFAULT MQTT CONSTANTS
 ##################################################
 
-# MQTT_BROKER_ADDRESS = str("0.0.0.0") 
-# MQTT_BROKER_PORT = 1883
-# MQTT_USER = "guest"
-# MQTT_PASSWORD = "guest"
+MQTT_BROKER_ADDRESS = str("0.0.0.0") 
+MQTT_BROKER_PORT = 1883
+MQTT_USER = "guest"
+MQTT_PASSWORD = "guest"
 
-MQTT_BROKER_ADDRESS = "52.77.234.153"
-MQTT_BROKER_PORT = 30006
-MQTT_USER = ""
-MQTT_PASSWORD = ""
+# MQTT_BROKER_ADDRESS = "52.77.234.153"
+# MQTT_BROKER_PORT = 30006
+# MQTT_USER = ""
+# MQTT_PASSWORD = ""
 
 MQTT_NAVIGATION_TOPIC = "nus5gdt/robots/mindpointeye/navigate"
 MQTT_MARKER_TOPIC = "nus5gdt/robots/mindpointeye/marker"
@@ -137,7 +137,7 @@ class MQTTThread(threading.Thread):
         mqtt_handler.initMQTTParams(mqtt_navigation_topic, mqtt_marker_topic, mqtt_robot_state_topic)
 
         mqtt_handler.initMQTTConnection(mqtt_broker_address, mqtt_broker_port, mqtt_user=mqtt_user, mqtt_password=mqtt_password)
-        mqtt_handler.initAMQPConnection(mqtt_rabbitmq_url)
+        mqtt_handler.initAMQPConnection(mqtt_rabbitmq_url, rabbitmq_exchange)
         mqtt_handler.startLoop()
 
 class AMQPThread(threading.Thread):

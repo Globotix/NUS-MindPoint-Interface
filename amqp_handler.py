@@ -31,9 +31,9 @@ class AMQPHandler():
         self.exchange = await self.channel.declare_exchange(self.exchange_name, type='topic',durable=True, auto_delete=False)
         
         # Declaring queue from channel
-        self.queue1 = await self.channel.declare_queue(self.queue_name1, auto_delete=False) # type: aio_pika.Queue
-        self.queue2 = await self.channel.declare_queue(self.queue_name2, auto_delete=False) # type: aio_pika.Queue
-        self.queue3 = await self.channel.declare_queue(self.queue_name3, auto_delete=False) # type: aio_pika.Queue
+        self.queue1 = await self.channel.declare_queue(self.queue_name1, durable = True, auto_delete=False) # type: aio_pika.Queue
+        self.queue2 = await self.channel.declare_queue(self.queue_name2, durable = True, auto_delete=False) # type: aio_pika.Queue
+        self.queue3 = await self.channel.declare_queue(self.queue_name3, durable = True, auto_delete=False) # type: aio_pika.Queue
 
         # Binding queue to exchange for queues
         await self.queue1.bind(self.exchange, self.queue_name1)
@@ -77,8 +77,7 @@ class AMQPHandler():
 
         while True:
             try:
-                #PLEASE DO NOT MAKE THE QUEUE DURABLE
-                queue = await self.channel.declare_queue(routing_key_sub, durable=False)
+                queue = await self.channel.declare_queue(routing_key_sub, durable=True)
                 # await queue.bind(self.exchange, routing_key_sub)
                 try: 
                     async with queue.iterator() as queue_iter:

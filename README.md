@@ -76,7 +76,6 @@ mosquitto_pub -h localhost -t mp/navigate -u guest -P guest -m {\"hey\":\"HO\"}
 sudo rabbitmqctl list_queues
 ```
 
-
 - If need be, Modify rabbimq config file ("/etc/rabbitmq/rabbitmq.conf")
 ```
 mqtt.listeners.tcp.default = 1883
@@ -97,4 +96,15 @@ mqtt.exchange         = amq.topic
 mqtt.subscription_ttl = 86400000
 mqtt.prefetch         = 10
 
+```
+
+## Errors
+
+1. Durable queues
+```
+PRECONDITION_FAILED - inequivalent arg 'durable' for queue 'STATUS_TOPIC' in vhost '/': received 'false' but current is 'true'
+```
+Make sure that the durable fields in publisher and subscriber are set to the same boolean value. And then run the following cmd and try again:
+```
+rabbitmqadmin delete queue name=name_of_queue
 ```

@@ -11,6 +11,7 @@ import robotTask_pb2
 class MQTTHandler():
     def __init__(self):
         self.client = mqtt.Client("mqtt_test") #create new instance
+        self.exchange_name=""
     
     def initAMQPParams(self, task_publisher_topic, status_topic):
         self.task_publisher_topic = task_publisher_topic
@@ -45,10 +46,22 @@ class MQTTHandler():
         #Test publishing
         # self.test_pub_mqtt()
 
-    def initAMQPConnection(self, url):
+    def initAMQPConnection(self, url, exchange_name):
+        self.exchange_name = exchange_name
         self.amqp_connection = pika.BlockingConnection(pika.ConnectionParameters(host=str(url)))
         self.channel = self.amqp_connection.channel()
+
+        #create exchange
+        self.exchange = self.channel.exchange_declare(exchange=exchange_name, exchange_type='topic',durable=True, auto_delete=False)
         
+        #Creates a queue, makes sure that it exists
+        self.queue = self.channel.queue_declare(queue=self.task_publisher_topic, durable=True,
+                                                auto_delete=False)
+
+        #Bind queue to exchange 
+        self.channel.queue_bind( exchange=exchange_name, 
+                                queue=self.task_publisher_topic, 
+                                routing_key=self.task_publisher_topic)
 
     def startLoop(self):
         print("STARTING LOOP")
@@ -78,6 +91,7 @@ class MQTTHandler():
 
     def on_message(self, client, userdata, msg):
         # print("received msg on topic("+msg.topic+") with msg: "+msg.payload)
+        print("received message")
 
         if (msg.topic == self.navigation_topic):
             #Convert to protobuf message and send to RabbitMQ
@@ -124,13 +138,11 @@ class MQTTHandler():
         Publish a JSON message via RabbitMQ
         """
 
-        #Creates a queue, makes sure that it exists
-        self.channel.queue_declare(queue=topic)
+        self.channel.basic_publish(exchange=self.exchange_name, 
+                                    routing_key=self.task_publisher_topic, 
+                                    body=msg_json)
 
-        self.channel.basic_publish(exchange='', routing_key=self.task_publisher_topic, body=msg_json)
         print(" [x] Sent msg: ", msg_json)
-
-
 
     """
     Publish to Dashboard
