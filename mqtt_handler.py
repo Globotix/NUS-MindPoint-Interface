@@ -96,18 +96,20 @@ class MQTTHandler():
 
     def on_message(self, client, userdata, msg):
         # print("received msg on topic("+msg.topic+") with msg: "+msg.payload)
-        print("received message")
 
         if (msg.topic == self.navigation_topic):
+            print("received navigation message")
+
             #Convert to protobuf message and send to RabbitMQ
             self.pubNavigate(msg.payload)
 
         elif (msg.topic == self.marker_topic):
+            print("received marker message")
+
             #Convert to protobuf message and send to RabbitMQ
             self.pubMarker(msg.payload)
-
-
-    """
+            
+    """ 
     Helper methods
     """
     def createRobotTaskProtobuf(self, uuid, args, task_type, action = 666, order = 666, 

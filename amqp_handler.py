@@ -88,7 +88,7 @@ class AMQPHandler():
                     async with queue.iterator() as queue_iter:
                         async for msg in queue_iter:
 
-                            print(f"subscribeQueue: Received Msg: {msg.body}")
+                            # print(f"subscribeQueue: Received Msg: {msg.body}")
                             #If there is function to process message
                             if process_msg_sub is not None:
                                 process_msg_result = await process_msg_sub(msg.body)

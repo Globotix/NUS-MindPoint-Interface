@@ -20,6 +20,10 @@ tmux send-keys -t 0.0 "python3 nus_main.py" C-m
 #MQTT TEST 1: MQTT Subscription to check robot status
 # tmux send-keys -t 0.1 "mosquitto_sub -v -h localhost -t \# -u guest -P guest -d" C-m
 tmux send-keys -t 0.1 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t \# -d" C-m
+tmux send-keys -t 0.1 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/marker -d" C-m
+
+mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/marker -d
+mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/navigate -d
 
 
 #MQTT TEST 2: MQTT publishing to check sending robot task
@@ -30,6 +34,7 @@ tmux send-keys -t 0.1 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t \# -d" C-m
 
 #RabbitMQ Test 1: Launch RabbitMQ subscription to TASK_PUBLISHER_TOPIC
 tmux send-keys -t 0.3 "python3 test/test_pub_rabbitmq_status_topic.py" C-m
+
 
 #RabbitMQ Test 2: Launch RabbitMQ Publishing of robot state to STATUS_TOPIC
 tmux send-keys -t 0.4 "python3 test/test_sub_rabbitmq_task_publisher_topic.py" C-m

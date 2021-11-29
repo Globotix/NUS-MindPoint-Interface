@@ -12,9 +12,9 @@ status_topic_durable: True
 task_status_topic_durable: False
 
 #RabbitMQ Topics
-task_publisher_topic:  "TASK_PUBLISHER_TOPIC"
-status_topic:  "STATUS_TOPIC"
-task_status_topic:  "TASK_STATUS_TOPIC"
+task_publisher_topic:   "TASK_PUBLISHER_TOPIC"
+status_topic:           "STATUS_TOPIC"
+task_status_topic:      "TASK_STATUS_TOPIC"
 
 ##################################################
 #DEFAULT MQTT CONSTANTS

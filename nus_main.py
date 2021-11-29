@@ -24,9 +24,9 @@ task_publisher_topic = ["TASK_PUBLISHER_TOPIC"]
 status_topic = ["STATUS_TOPIC"]
 task_status_topic = ["TASK_STATUS_TOPIC"]
 
-exchange_durable = [False]
+exchange_durable = [True]
 task_publisher_topic_durable = [False]
-status_topic_durable = [False]
+status_topic_durable = [True]
 task_status_topic_durable = [False]
 
 ##################################################
