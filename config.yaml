@@ -7,7 +7,9 @@ mqtt_rabbitmq_url: "localhost"
 
 rabbitmq_exchange: "default-topic-exchange"
 exchange_durable: True
-queue_durable: True
+task_publisher_topic_durable:  True
+status_topic_durable: False
+task_status_topic_durable: False
 
 #RabbitMQ Topics
 task_publisher_topic:  "TASK_PUBLISHER_TOPIC"
