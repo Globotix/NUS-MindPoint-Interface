@@ -21,12 +21,12 @@ class AMQPConsumer():
         #create exchange
         self.exchange = self.channel.exchange_declare(exchange=RABBITMQ_EXCHANGE, 
                                                         exchange_type='topic',
-                                                        durable=True, auto_delete=False)
+                                                        durable=False, auto_delete=False)
         
 
         #Creates a queue, makes sure that it exists
         self.queue = self.channel.queue_declare(queue=TASK_PUBLISHER_TOPIC, 
-                                                durable=True,
+                                                durable=False,
                                                 auto_delete=False)
 
         #bind queue to exchange

@@ -10,7 +10,7 @@ class AMQPHandler():
     def __init__(self):
         self.connection = None
     
-    def initParams(self, url, task_publisher_topic, status_topic, task_status_topic, exchange, exchange_durable = False, task_publisher_topic_durable = True, status_topic_durable = False, task_status_topic_durable = True, subscribe_frequency = 0.1):
+    def initParams(self, url, task_publisher_topic, status_topic, task_status_topic, exchange, exchange_durable = False, task_publisher_topic_durable = True, status_topic_durable = True, task_status_topic_durable = True, subscribe_frequency = 0.1):
         self.url = url
         self.queue_name1 = task_publisher_topic
         self.queue_name2 = status_topic

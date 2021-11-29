@@ -14,11 +14,13 @@ tmux split-window -v -t 0.3 $TMUX_PANE
 #Launch main node
 # tmux send-keys -t 0.0 "cd dist_nus && python3 main.pyc" C-m
 # tmux send-keys -t 0.0 "cd dist_internal && python3 main.pyc" C-m
-tmux send-keys -t 0.0 "python3 main.py" C-m
+tmux send-keys -t 0.0 "python3 nus_main.py" C-m
 
 
 #MQTT TEST 1: MQTT Subscription to check robot status
-tmux send-keys -t 0.1 "mosquitto_sub -v -h localhost -t \# -u guest -P guest -d" C-m
+# tmux send-keys -t 0.1 "mosquitto_sub -v -h localhost -t \# -u guest -P guest -d" C-m
+tmux send-keys -t 0.1 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t \# -d" C-m
+
 
 #MQTT TEST 2: MQTT publishing to check sending robot task
 # tmux send-keys -t 0.2 "mosquitto_pub -h localhost -t "nus5gdt/robots/mindpointeye/navigate" -u guest -P guest -m "{\"uuid\":\"ROBOT01_UUID0001\", \"action\":\"start_movement\", \"target_marker\":\"pointA\" }"" 

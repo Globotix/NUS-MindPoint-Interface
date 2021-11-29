@@ -48,7 +48,6 @@ class MQTTHandler():
 
 
 
-
     def initAMQPConnection(self, url, exchange_name, exchange_durable = False, task_publisher_topic_durable = True, status_topic_durable = False, task_status_topic_durable = True):
         self.exchange_name = exchange_name
         self.exchange_durable = exchange_durable
