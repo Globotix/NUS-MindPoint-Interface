@@ -10,13 +10,16 @@ class AMQPHandler():
     def __init__(self):
         self.connection = None
     
-    def initParams(self, url, task_publisher_topic, status_topic, task_status_topic, exchange, subscribe_frequency = 0.1):
+    def initParams(self, url, task_publisher_topic, status_topic, task_status_topic, exchange, exchange_durable = False, queue_durable = False, subscribe_frequency = 0.1):
         self.url = url
         self.queue_name1 = task_publisher_topic
         self.queue_name2 = status_topic
         self.queue_name3 = task_status_topic
         
         self.exchange_name = exchange
+
+        self.exchange_durable = exchange_durable
+        self.queue_durable = queue_durable
 
         self.subscribe_frequency = subscribe_frequency
 
@@ -28,12 +31,12 @@ class AMQPHandler():
         # Creating channel from connection
         self.channel = await self.connection.channel()
         # Declaring exchange from channel
-        self.exchange = await self.channel.declare_exchange(self.exchange_name, type='topic',durable=True, auto_delete=False)
+        self.exchange = await self.channel.declare_exchange(self.exchange_name, type='topic',durable = self.exchange_durable, auto_delete=False)
         
         # Declaring queue from channel
-        self.queue1 = await self.channel.declare_queue(self.queue_name1, durable = True, auto_delete=False) # type: aio_pika.Queue
-        self.queue2 = await self.channel.declare_queue(self.queue_name2, durable = True, auto_delete=False) # type: aio_pika.Queue
-        self.queue3 = await self.channel.declare_queue(self.queue_name3, durable = True, auto_delete=False) # type: aio_pika.Queue
+        self.queue1 = await self.channel.declare_queue(self.queue_name1, durable = self.queue_durable, auto_delete=False) # type: aio_pika.Queue
+        self.queue2 = await self.channel.declare_queue(self.queue_name2, durable = self.queue_durable, auto_delete=False) # type: aio_pika.Queue
+        self.queue3 = await self.channel.declare_queue(self.queue_name3, durable = self.queue_durable, auto_delete=False) # type: aio_pika.Queue
 
         # Binding queue to exchange for queues
         await self.queue1.bind(self.exchange, self.queue_name1)

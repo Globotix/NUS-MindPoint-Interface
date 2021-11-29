@@ -46,16 +46,19 @@ class MQTTHandler():
         #Test publishing
         # self.test_pub_mqtt()
 
-    def initAMQPConnection(self, url, exchange_name):
+    def initAMQPConnection(self, url, exchange_name, exchange_durable = False, queue_durable = False):
         self.exchange_name = exchange_name
+        self.exchange_durable = exchange_durable
+        self.queue_durable = queue_durable
+
         self.amqp_connection = pika.BlockingConnection(pika.ConnectionParameters(host=str(url)))
         self.channel = self.amqp_connection.channel()
 
         #create exchange
-        self.exchange = self.channel.exchange_declare(exchange=exchange_name, exchange_type='topic',durable=True, auto_delete=False)
+        self.exchange = self.channel.exchange_declare(exchange=exchange_name, exchange_type='topic',durablec= self.exchange_durable, auto_delete=False)
         
         #Creates a queue, makes sure that it exists
-        self.queue = self.channel.queue_declare(queue=self.task_publisher_topic, durable=True,
+        self.queue = self.channel.queue_declare(queue=self.task_publisher_topic, durablec= self.queue_durable,
                                                 auto_delete=False)
 
         #Bind queue to exchange 

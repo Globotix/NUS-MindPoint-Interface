@@ -24,13 +24,16 @@ task_publisher_topic = ["TASK_PUBLISHER_TOPIC"]
 status_topic = ["STATUS_TOPIC"]
 task_status_topic = ["TASK_STATUS_TOPIC"]
 
+exchange_durable = [False]
+queue_durable = [False]
+
 ##################################################
 #DEFAULT MQTT CONSTANTS
 ##################################################
 mqtt_broker_address = ["0.0.0.0"] 
 mqtt_broker_port = [1883] 
-mqtt_user = ["guest"] 
-mqtt_password = ["guest"] 
+mqtt_user = ["guest"]
+mqtt_password = ["guest"]
 
 mqtt_navigation_topic = ["nus5gdt/robots/mindpointeye/navigate"] 
 mqtt_marker_topic = ["nus5gdt/robots/mindpointeye/marker"]
@@ -61,6 +64,9 @@ def parseConfig(config_dir):
 
         rabbitmq_exchange[0] = dataMap["rabbitmq_exchange"]
 
+        exchange_durable[0] = dataMap["exchange_durable"]
+        queue_durable[0] = dataMap["queue_durable"]
+
         task_publisher_topic[0] = dataMap["task_publisher_topic"]
         status_topic[0] = dataMap["status_topic"]
         task_status_topic[0] = dataMap["task_status_topic"]
@@ -79,7 +85,7 @@ class MQTTThread(threading.Thread):
         mqtt_handler.initMQTTParams(mqtt_navigation_topic[0], mqtt_marker_topic[0], mqtt_robot_state_topic[0])
 
         mqtt_handler.initMQTTConnection(mqtt_broker_address[0], mqtt_broker_port[0], mqtt_user=mqtt_user[0], mqtt_password=mqtt_password[0])
-        mqtt_handler.initAMQPConnection(mqtt_rabbitmq_url[0], rabbitmq_exchange[0])
+        mqtt_handler.initAMQPConnection(mqtt_rabbitmq_url[0], rabbitmq_exchange[0], exchange_durable[0], queue_durable[0])
         mqtt_handler.startLoop()
 
 class AMQPThread(threading.Thread):
@@ -104,7 +110,10 @@ class AMQPThread(threading.Thread):
                                 task_publisher_topic[0], 
                                 status_topic[0],
                                 task_status_topic[0],
-                                rabbitmq_exchange[0])
+                                rabbitmq_exchange[0], 
+                                exchange_durable[0], 
+                                queue_durable[0]
+                                )
 
         try: 
             loop.create_task(amqp_handler.initConnection(loop))
