@@ -1,0 +1,28 @@
+##################################################
+#DEFAULT RABBITQ CONSTANTS
+##################################################
+#RabbitMQ Address
+aio_rabbitmq_url: "amqp://guest:guest@localhost/"
+mqtt_rabbitmq_url: "localhost"
+
+rabbitmq_exchange: "default-topic-exchange"
+
+#RabbitMQ Topics
+task_publisher_topic:  "TASK_PUBLISHER_TOPIC"
+status_topic:  "STATUS_TOPIC"
+task_status_topic:  "TASK_STATUS_TOPIC"
+
+##################################################
+#DEFAULT MQTT CONSTANTS
+##################################################
+# mqtt_broker_address: "52.77.234.153"
+# mqtt_broker_port: 30006
+mqtt_broker_address: "0.0.0.0"
+mqtt_broker_port: 1883
+mqtt_user: "guest"
+mqtt_password: "guest"
+
+#MQTT topics
+mqtt_navigation_topic: "nus5gdt/robots/mindpointeye/navigate"
+mqtt_marker_topic: "nus5gdt/robots/mindpointeye/marker"
+mqtt_robot_state_topic: "nus5gdt/robots/mindpointeye/robot_state"

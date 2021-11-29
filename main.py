@@ -5,125 +5,67 @@ from amqp_handler import *
 
 import threading
 
+import yaml #to parse yaml files
+
 import sys, argparse, time
-
-
-##################################################
-#DEFAULT RABBITQ CONSTANTS
-##################################################
-AIO_RABBITMQ_URL = str("amqp://guest:guest@localhost/")
-MQTT_RABBITMQ_URL = str("localhost")
-
-RABBITMQ_EXCHANGE = str("default-topic-exchange")
-
-TASK_PUBLISHER_TOPIC = str("TASK_PUBLISHER_TOPIC")
-STATUS_TOPIC = str("STATUS_TOPIC")
-TASK_STATUS_TOPIC = str("TASK_STATUS_TOPIC")
-
-##################################################
-#DEFAULT MQTT CONSTANTS
-##################################################
-
-MQTT_BROKER_ADDRESS = str("0.0.0.0") 
-MQTT_BROKER_PORT = 1883
-MQTT_USER = "guest"
-MQTT_PASSWORD = "guest"
-
-# MQTT_BROKER_ADDRESS = "52.77.234.153"
-# MQTT_BROKER_PORT = 30006
-# MQTT_USER = ""
-# MQTT_PASSWORD = ""
-
-MQTT_NAVIGATION_TOPIC = "nus5gdt/robots/mindpointeye/navigate"
-MQTT_MARKER_TOPIC = "nus5gdt/robots/mindpointeye/marker"
-MQTT_ROBOT_STATE_TOPIC = "nus5gdt/robots/mindpointeye/robot_state"
 
 mqtt_handler = MQTTHandler()
 amqp_handler = AMQPHandler()
 
-#MQTT address and port
-mqtt_broker_address = MQTT_BROKER_ADDRESS
-mqtt_broker_port = MQTT_BROKER_PORT
+##################################################
+#DEFAULT RABBITQ CONSTANTS
+##################################################
+aio_rabbitmq_url = ["amqp://guest:guest@localhost/"]
+mqtt_rabbitmq_url = ["localhost"]
 
-#username and password
-mqtt_user = MQTT_USER
-mqtt_password = MQTT_PASSWORD
+rabbitmq_exchange = ["default-topic-exchange"]
 
-#RabbitMQ topics
-rabbitmq_exchange = RABBITMQ_EXCHANGE
-task_publisher_topic = TASK_PUBLISHER_TOPIC
-status_topic = STATUS_TOPIC
-task_status_topic = TASK_STATUS_TOPIC
+task_publisher_topic = ["TASK_PUBLISHER_TOPIC"]
+status_topic = ["STATUS_TOPIC"]
+task_status_topic = ["TASK_STATUS_TOPIC"]
 
-#Digital Twin topics
-mqtt_navigation_topic = MQTT_NAVIGATION_TOPIC
-mqtt_marker_topic = MQTT_MARKER_TOPIC
-mqtt_robot_state_topic = MQTT_ROBOT_STATE_TOPIC
+##################################################
+#DEFAULT MQTT CONSTANTS
+##################################################
+mqtt_broker_address = ["0.0.0.0"] 
+mqtt_broker_port = [1883] 
+mqtt_user = ["guest"] 
+mqtt_password = ["guest"] 
 
-#RabbitMQ address
-aio_rabbitmq_url = AIO_RABBITMQ_URL
-mqtt_rabbitmq_url = MQTT_RABBITMQ_URL
+mqtt_navigation_topic = ["nus5gdt/robots/mindpointeye/navigate"] 
+mqtt_marker_topic = ["nus5gdt/robots/mindpointeye/marker"]
+mqtt_robot_state_topic = ["nus5gdt/robots/mindpointeye/robot_state"] 
 
-def parse_arguments():
-    parser = argparse.ArgumentParser()
+def parseConfig(config_dir):
+    """
+    Function to parse YAML file to populate self.state_dictionary
 
-    #MQTT address and port
-    parser.add_argument("--mqtt_broker_address", help="Address for MQTT Broker", type=str)
-    parser.add_argument("--mqtt_broker_port", help="Port for MQTT Broker", type=int)
+    @param config_dir [string]: Config file directory
+    """
+    with open(config_dir) as f:
+        dataMap = yaml.safe_load(f) # use safe_load instead of load
 
-    #username and password
-    parser.add_argument("--mqtt_user", help="MQTT Broker Username", type=str )
-    parser.add_argument("--mqtt_password", help="MQTT Broker Password", type=str)
+        #MQTT arguments
+        mqtt_broker_address[0] = dataMap["mqtt_broker_address"]
+        mqtt_broker_port[0] = dataMap["mqtt_broker_port"]
+        mqtt_user[0] = dataMap["mqtt_user"]
+        mqtt_password[0] = dataMap["mqtt_password"]
 
-    #RabbitMQ topics
-    parser.add_argument("--task_publisher_topic", help="RabbitMQ Topic for TASK_PUBLISHER_TOPIC", type=str)
-    parser.add_argument("--status_topic", help="RabbitMQ Topic for STATUS_TOPIC", type=str)
+        mqtt_navigation_topic[0] = dataMap["mqtt_navigation_topic"]
+        mqtt_marker_topic[0] = dataMap["mqtt_marker_topic"]
+        mqtt_robot_state_topic[0] = dataMap["mqtt_robot_state_topic"]
 
-    #Digital Twin topics
-    parser.add_argument("--mqtt_navigation_topic", help="MQTT Topic for navigation", type=str)
-    parser.add_argument("--mqtt_marker_topic", help="MQTT Topic for creating marker", type=str)
-    parser.add_argument("--mqtt_robot_state_topic", help="RabbitMQ Topic for STATUS_TOPIC", type=str)
+        #RabbitMQ arguments
+        aio_rabbitmq_url[0] = dataMap["aio_rabbitmq_url"]
+        mqtt_rabbitmq_url[0] = dataMap["mqtt_rabbitmq_url"]
 
-    #RabbitMQ address
-    parser.add_argument("--aio_rabbitmq_url", help="Async RabbitMQ Address ", type=str)
-    parser.add_argument("--mqtt_rabbitmq_url", help="Sync RabbitMQ Address", type=str)
+        rabbitmq_exchange[0] = dataMap["rabbitmq_exchange"]
 
-    
-    args = parser.parse_args()
+        task_publisher_topic[0] = dataMap["task_publisher_topic"]
+        status_topic[0] = dataMap["status_topic"]
+        task_status_topic[0] = dataMap["task_status_topic"]
 
-
-    #MQTT address and port
-    if args.mqtt_broker_address:
-        mqtt_broker_address = args.mqtt_broker_address
-    if args.mqtt_broker_port:
-        mqtt_broker_port = args.mqtt_broker_port
-
-    #username and password
-    if args.mqtt_user:
-        mqtt_user =args.mqtt_user
-    if args.mqtt_password:
-        mqtt_password = args.mqtt_password
-
-    #RabbitMQ topics
-    if args.task_publisher_topic:
-        task_publisher_topic = args.task_publisher_topic
-    if args.status_topic:
-        status_topic = args.status_topic
-
-    #Digital Twin topics
-    if args.mqtt_navigation_topic:
-        mqtt_navigation_topic = args.mqtt_navigation_topic
-    if args.mqtt_marker_topic:
-        mqtt_marker_topic = args.mqtt_marker_topic
-    if args.mqtt_robot_state_topic:
-        mqtt_robot_state_topic = args.mqtt_robot_state_topic
-
-    #RabbitMQ Address
-    if args.aio_rabbitmq_url:
-        aio_rabbitmq_url = args.aio_rabbitmq_url
-    if args.mqtt_rabbitmq_url:
-        mqtt_rabbitmq_url = args.mqtt_rabbitmq_url
-
+parseConfig("./config.yaml")
 
 class MQTTThread(threading.Thread):
     def __init__(self, threadID, name):
@@ -133,11 +75,11 @@ class MQTTThread(threading.Thread):
     def run(self):
         print("start_mqtt: Started MQTT Thread")
 
-        mqtt_handler.initAMQPParams(task_publisher_topic, status_topic)
-        mqtt_handler.initMQTTParams(mqtt_navigation_topic, mqtt_marker_topic, mqtt_robot_state_topic)
+        mqtt_handler.initAMQPParams(task_publisher_topic[0], status_topic[0])
+        mqtt_handler.initMQTTParams(mqtt_navigation_topic[0], mqtt_marker_topic[0], mqtt_robot_state_topic[0])
 
-        mqtt_handler.initMQTTConnection(mqtt_broker_address, mqtt_broker_port, mqtt_user=mqtt_user, mqtt_password=mqtt_password)
-        mqtt_handler.initAMQPConnection(mqtt_rabbitmq_url, rabbitmq_exchange)
+        mqtt_handler.initMQTTConnection(mqtt_broker_address[0], mqtt_broker_port[0], mqtt_user=mqtt_user[0], mqtt_password=mqtt_password[0])
+        mqtt_handler.initAMQPConnection(mqtt_rabbitmq_url[0], rabbitmq_exchange[0])
         mqtt_handler.startLoop()
 
 class AMQPThread(threading.Thread):
@@ -158,16 +100,16 @@ class AMQPThread(threading.Thread):
             loop = asyncio.new_event_loop()
 
 
-        amqp_handler.initParams(aio_rabbitmq_url, 
-                                task_publisher_topic, 
-                                status_topic,
-                                task_status_topic,
-                                rabbitmq_exchange)
+        amqp_handler.initParams(aio_rabbitmq_url[0], 
+                                task_publisher_topic[0], 
+                                status_topic[0],
+                                task_status_topic[0],
+                                rabbitmq_exchange[0])
 
         try: 
             loop.create_task(amqp_handler.initConnection(loop))
 
-            loop.create_task(amqp_handler.subscribeQueue(status_topic, act_on_msg=mqtt_handler.pubRobotState))
+            loop.create_task(amqp_handler.subscribeQueue(status_topic[0], act_on_msg=mqtt_handler.pubRobotState))
 
             loop.run_forever()
         finally:
@@ -186,7 +128,6 @@ def main():
 
 if __name__ == '__main__':
     try:
-        parse_arguments()
         main()
 
         print("Main(): all threads ended")
