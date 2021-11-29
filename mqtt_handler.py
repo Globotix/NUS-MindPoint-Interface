@@ -108,7 +108,7 @@ class MQTTHandler():
 
             #Convert to protobuf message and send to RabbitMQ
             self.pubMarker(msg.payload)
-            
+
     """ 
     Helper methods
     """
@@ -252,9 +252,9 @@ class MQTTHandler():
         msg_protobuf = robotTask_pb2.RequestMessage()
         if (msg_dict["action"] == "create_marker"):
             msg_args = {"marker_name": msg_dict["marker_name"], 
-                        "x": msg_dict["pos_x"], 
-                        "y": msg_dict["pos_y"], 
-                        "theta": msg_dict["pos_theta"]}
+                        "x": float(msg_dict["pos_x"]), 
+                        "y": float(msg_dict["pos_y"]), 
+                        "theta": float(msg_dict["pos_theta"])}
             msg_args_str = json.dumps(msg_args)
 
             msg_protobuf = self.createRobotTaskProtobuf(uuid = msg_dict["uuid"], 

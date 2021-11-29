@@ -104,7 +104,6 @@ class AMQPHandler():
                     pass
                     # print(f"subscribeQueue: Exception while consuming/processing message: {err} ")
             except aio_pika.exceptions.ChannelClosed as err:
-                
                     print(f"subscribeQueue: Exception while binding to queue: {err} ")
             #A Python AttributeError is raised when you try to call an 
             # attribute of an object whose type does not support that method.
