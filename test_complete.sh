@@ -19,11 +19,13 @@ tmux send-keys -t 0.0 "python3 nus_main.py" C-m
 
 #MQTT TEST 1: MQTT Subscription to check robot status
 # tmux send-keys -t 0.1 "mosquitto_sub -v -h localhost -t \# -u guest -P guest -d" C-m
-tmux send-keys -t 0.1 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t \# -d" C-m
+# tmux send-keys -t 0.1 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t \# -d" C-m
 tmux send-keys -t 0.1 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/marker -d" C-m
 
-mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/marker -d
-mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/navigate -d
+tmux send-keys -t 0.2 "mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/navigate -d" C-m
+
+# mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/marker -d
+# mosquitto_sub -v -h 52.77.234.153 -p 30006 -t nus5gdt/robots/mindpointeye/navigate -d
 
 
 #MQTT TEST 2: MQTT publishing to check sending robot task
