@@ -254,7 +254,8 @@ class MQTTHandler():
             msg_args = {"marker_name": msg_dict["marker_name"], 
                         "x": float(msg_dict["pos_x"]), 
                         "y": float(msg_dict["pos_y"]), 
-                        "theta": float(msg_dict["pos_theta"])}
+                        "theta": float(msg_dict["pos_theta"]),
+                        "marker_type": msg_dict["marker_type"]}
             msg_args_str = json.dumps(msg_args)
 
             msg_protobuf = self.createRobotTaskProtobuf(uuid = msg_dict["uuid"], 
