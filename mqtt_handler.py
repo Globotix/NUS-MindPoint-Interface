@@ -144,11 +144,13 @@ class MQTTHandler():
         """
         Publish a JSON message via RabbitMQ
         """
-
-        self.channel.basic_publish(exchange=self.exchange_name, 
-                                    routing_key=self.task_publisher_topic, 
-                                    body=msg_json)
-
+        try:
+            self.channel.basic_publish(exchange=self.exchange_name, 
+                                        routing_key=self.task_publisher_topic, 
+                                        body=msg_json)
+        except Exception as err:
+            print("exception while closing AMQP connection: ", err)
+            
         print(" [x] Sent msg: ", msg_json)
 
     """
