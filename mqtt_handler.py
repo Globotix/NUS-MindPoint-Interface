@@ -7,10 +7,16 @@ from google.protobuf.json_format import MessageToJson, MessageToDict
 #Import protobuf messages
 import robotTask_pb2
 
+import random
+from datetime import datetime
 
 class MQTTHandler():
     def __init__(self):
-        self.client = mqtt.Client("mqtt_test") #create new instance
+        random.seed(datetime.now())
+        random_id = ""
+        for random_number in random.sample(range(1, 12), 9):
+            random_id += str(random_number)
+        self.client = mqtt.Client(random_id) #create new instance
         self.exchange_name=""
     
     def initAMQPParams(self, task_publisher_topic, status_topic):
@@ -95,8 +101,7 @@ class MQTTHandler():
         print("Disconnected from MQTT broker")
 
     def on_message(self, client, userdata, msg):
-        # print("received msg on topic("+msg.topic+") with msg: "+msg.payload)
-
+        print("received msg on topic("+msg.topic+")")
         if (msg.topic == self.navigation_topic):
             print("received navigation message")
 
@@ -148,6 +153,7 @@ class MQTTHandler():
             self.channel.basic_publish(exchange=self.exchange_name, 
                                         routing_key=self.task_publisher_topic, 
                                         body=msg_json)
+
         except Exception as err:
             print("exception while closing AMQP connection: ", err)
             
