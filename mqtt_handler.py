@@ -102,6 +102,7 @@ class MQTTHandler():
 
     def on_message(self, client, userdata, msg):
         print("received msg on topic("+msg.topic+")")
+        
         if (msg.topic == self.navigation_topic):
             print("received navigation message")
 

@@ -32,10 +32,10 @@ task_status_topic_durable = [False]
 ##################################################
 #DEFAULT MQTT CONSTANTS
 ##################################################
-mqtt_broker_address = ["0.0.0.0"] 
-mqtt_broker_port = [1883] 
-mqtt_user = ["guest"]
-mqtt_password = ["guest"]
+mqtt_broker_address = ["52.77.234.153"] 
+mqtt_broker_port = [30006] 
+mqtt_user = [""]
+mqtt_password = [""]
 
 mqtt_navigation_topic = ["nus5gdt/robots/mindpointeye/navigate"] 
 mqtt_marker_topic = ["nus5gdt/robots/mindpointeye/marker"]
