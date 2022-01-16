@@ -19,10 +19,10 @@ task_status_topic:      "TASK_STATUS_TOPIC"
 ##################################################
 #DEFAULT MQTT CONSTANTS
 ##################################################
-# mqtt_broker_address: "52.77.234.153"
-# mqtt_broker_port: 30006
-mqtt_broker_address: "0.0.0.0"
-mqtt_broker_port: 1883
+mqtt_broker_address: "52.77.234.153"
+mqtt_broker_port: 30006
+# mqtt_broker_address: "0.0.0.0"
+# mqtt_broker_port: 1883
 mqtt_user: ""
 mqtt_password: ""
 
