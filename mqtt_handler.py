@@ -76,7 +76,8 @@ class MQTTHandler():
 
     def startLoop(self):
         print("STARTING LOOP")
-        self.client.loop_forever()
+        self.client.loop_start() #starts a new thread, that calls the loop method at regular intervals for you. It also handles re-connects automatically.
+        # self.client.loop_forever() #blocks the program, and is useful when the program must run indefinitely. also handles automatic reconnects.
         # self.client.loop()
 
     """
