@@ -76,6 +76,7 @@ def parseConfig(config_dir):
         task_status_topic[0] = dataMap["task_status_topic"]
 
 parseConfig("/home/nvidia/smartMobilServ/dt_app/dist_mp/NUS-MindPoint-Interface/config.yaml")
+# parseConfig("/home/john/code_bank/NUS-MindPoint-Interface/config.yaml")
 
 class MQTTThread(threading.Thread):
     def __init__(self, threadID, name):
