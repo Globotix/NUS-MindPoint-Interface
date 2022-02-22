@@ -237,7 +237,7 @@ class MQTTHandler():
                                                         args = msg_args_str, task_type = 0, action = 2)
 
         elif (msg_dict["action"] == "cancel_movement"):
-            msg_args = {"cancel_uuid": msg_dict["cancel_uuid"]}
+            msg_args = {"cancel_uuid": msg_dict["uuid"]}
             msg_args_str = json.dumps(msg_args)
             
             msg_protobuf = self.createRobotTaskProtobuf(uuid = msg_dict["uuid"], 
